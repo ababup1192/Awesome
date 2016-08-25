@@ -21,7 +21,7 @@ class Parser
     left '||'
     left '='
     right '='
-    left '.'
+    left ','
   preclow
 
   rule
