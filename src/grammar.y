@@ -1,6 +1,7 @@
 class Parser
   token IF
   token DEF
+  token CLASS
   token NEWLINE
   token NUMBER
   token STRING
@@ -23,6 +24,7 @@ class Parser
     left '.'
   preclow
 
+  rule
   Program:
     /* nothing */ { result = Nodes.new([]) }
     | Expressions { result = val[0] }
@@ -38,10 +40,10 @@ class Parser
       Literal
     | Call
     | Operator
-    | GetConsntant
+    | GetConstant
     | SetConstant
     | GetLocal
-    | SetLOcal
+    | SetLocal
     | Def
     | Class
     | If
@@ -56,7 +58,7 @@ class Parser
     | STRING    { result = StringNode.new(val[0]) }
     | TRUE      { result = TrueNode.new }
     | FALSE     { result = FalseNode.new }
-    | NIL       { result = FalseNode.new }
+    | NIL       { result = NilNode.new }
     ;
     Call:
       IDENTIFIER Arguments      { result = CallNode.new(nil, val[0], val[1]) }
@@ -105,7 +107,7 @@ class Parser
     Def:
       DEF IDENTIFIER Block      { result = DefNode.new(val[1], [], val[2]) }
     | DEF IDENTIFIER
-       "(" ParamList ")" Block  { result = DEfNode.new(val[1], val[3], val[5]) }
+       "(" ParamList ")" Block  { result = DefNode.new(val[1], val[3], val[5]) }
     ;
     ParamList:
       /* nothing */             { result = [] }
@@ -121,16 +123,16 @@ class Parser
 end
 
 ---- header
-  require "lexer"
-  require "nodes"
+  require_relative "lexer"
+  require_relative "nodes"
 
 ---- inner
-  def perse(code, show_tokens=false)
+  def parse(code, show_tokens=false)
     @tokens = Lexer.new.tokenize(code)
     puts @tokens.inspect if show_tokens
     do_parse
   end
 
   def next_token
-    @token.shift
+    @tokens.shift
   end
